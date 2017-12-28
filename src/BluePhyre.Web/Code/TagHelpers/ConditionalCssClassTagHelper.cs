@@ -31,12 +31,11 @@ namespace BluePhyre.Web.Code.TagHelpers
                 items.Insert(0, CssClass);
             }
 
-            if (items.Any())
-            {
-                var classes = string.Join(" ", items.ToArray());
+            if (!items.Any()) return;
 
-                output.Attributes.Add("class", classes);
-            }
+            var classes = string.Join(" ", items.ToArray());
+
+            output.Attributes.Add("class", classes);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace BluePhyre.Web.Controllers
     {
         public async Task Login(string returnUrl = "/")
         {
-            await HttpContext.ChallengeAsync("Auth0", new AuthenticationProperties() { RedirectUri = returnUrl });
+            await HttpContext.ChallengeAsync("Auth0", new AuthenticationProperties { RedirectUri = returnUrl });
         }
 
         [Authorize]
@@ -40,7 +40,7 @@ namespace BluePhyre.Web.Controllers
         [Authorize]
         public IActionResult Profile()
         {
-            return View(new UserProfile()
+            return View(new UserProfile
             {
                 Name = User.Identity.Name,
                 EmailAddress = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,

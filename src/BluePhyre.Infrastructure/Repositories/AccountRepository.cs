@@ -35,14 +35,12 @@ namespace BluePhyre.Infrastructure.Repositories
                 Domains = domains.Where(d => d.ClientId == c.Id).ToList()
             });
 
-            if (status == Status.Inactive)
+            switch (status)
             {
-                return result.Where(i => !i.Client.Active);
-            }
-
-            if (status == Status.Active)
-            {
-                return result.Where(i => i.Client.Active);
+                case Status.Inactive:
+                    return result.Where(i => !i.Client.Active);
+                case Status.Active:
+                    return result.Where(i => i.Client.Active);
             }
 
             return result;

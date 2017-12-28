@@ -62,7 +62,7 @@ namespace BluePhyre.Web
 
                 options.Events = new OpenIdConnectEvents
                 {
-                    OnRedirectToIdentityProviderForSignOut = (context) =>
+                    OnRedirectToIdentityProviderForSignOut = context =>
                     {
                         var logoutUri = $"https://{Configuration["Auth0:Domain"]}/v2/logout?client_id={Configuration["Auth0:ClientId"]}";
 
