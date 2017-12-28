@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BluePhyre.Web", "src\BluePh
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluePhyre.Infrastructure", "src\BluePhyre.Infrastructure\BluePhyre.Infrastructure.csproj", "{962364FC-706F-4CF2-A580-6ACC9709BB4D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluePhyre.Infrastructure.Tests", "tests\BluePhyre.Infrastructure.Tests\BluePhyre.Infrastructure.Tests.csproj", "{BB26020C-13B1-41BF-B9C4-F837E68C20A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluePhyre.Web.Tests", "tests\BluePhyre.Web.Tests\BluePhyre.Web.Tests.csproj", "{37F643BF-E59B-4A8A-A29C-2B38EEED81B0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{962364FC-706F-4CF2-A580-6ACC9709BB4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{962364FC-706F-4CF2-A580-6ACC9709BB4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{962364FC-706F-4CF2-A580-6ACC9709BB4D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB26020C-13B1-41BF-B9C4-F837E68C20A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB26020C-13B1-41BF-B9C4-F837E68C20A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB26020C-13B1-41BF-B9C4-F837E68C20A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB26020C-13B1-41BF-B9C4-F837E68C20A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37F643BF-E59B-4A8A-A29C-2B38EEED81B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37F643BF-E59B-4A8A-A29C-2B38EEED81B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37F643BF-E59B-4A8A-A29C-2B38EEED81B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37F643BF-E59B-4A8A-A29C-2B38EEED81B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
