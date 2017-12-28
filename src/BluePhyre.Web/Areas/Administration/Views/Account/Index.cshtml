@@ -1,0 +1,61 @@
+﻿@addTagHelper *, BluePhyre
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using BluePhyre.Web.Areas.Administration.Models
+@using BluePhyre.Core.Entities
+@model GetClientsViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Index";
+}
+<h2>Index</h2><div class="row">
+    <div class="col-md-12">
+        <form method="get" class="form-inline">
+            <div class="form-group">
+                <label for="status">Filter: </label>
+                <select id="status" name="status" asp-items="Html.GetEnumSelectList<Status>()"></select>
+            </div>
+
+            
+            <button type="submit" class="btn btn-default">Filter</button>
+
+
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <table id="accounts" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Account Name</th>
+                    <th>Username</th>
+                    <th>Active</th>
+                    <th>Domains</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var account in Model.Clients)
+                {
+                    <tr conditional-css-class-bg-warning="@account.Flag">
+                        <td>@account.Client.Id</td>
+                        <td>@account.Client.AccountName</td>
+                        <td>@account.Client.Username</td>
+                        <td>@(account.Client.Expired.HasValue ? "No" : "Yes")</td>
+                        <td>@account.ActiveDomains/@account.TotalDomains</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#accounts').DataTable();
+        });
+    </script>
+
+}
