@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using BluePhyre.Core.Interfaces.Repositories;
 using BluePhyre.Infrastructure.Repositories;
@@ -81,12 +83,17 @@ namespace BluePhyre.Web
                         context.HandleResponse();
 
                         return Task.CompletedTask;
+                    },
+                    OnTokenValidated = context =>
+                    {
+                        var user = context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+                        return Task.CompletedTask;
                     }
                 };
             });
 
             services.AddMvc();
-            services.AddSingleton<IAccountRepository, AccountRepository>();
+            services.AddSingleton<IClientRepository, ClientRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -98,6 +105,8 @@ namespace BluePhyre.Web
             {
                 app.UseExceptionHandler("Home/Error");
             }
+
+            app.UseStatusCodePages();
 
             app.UseStaticFiles();
 

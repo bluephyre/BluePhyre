@@ -1,0 +1,107 @@
+﻿@addTagHelper *, BluePhyre.Web
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using BluePhyre.Core.Entities
+@model BluePhyre.Web.Areas.Administration.Models.EditRecurringViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Edit Recurring";
+}
+<h2>@ViewData["Title"]</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="ClientId"/>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="DomainId">Domain</label>
+                                <select asp-for="DomainId" asp-items="@(new SelectList(ViewBag.Domains, "Id", "Name", null))" class="form-control"></select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="ResourceId">Resource</label>
+                                <select asp-for="ResourceId" asp-items="@(new SelectList(ViewBag.Resources, "Id", "Name", null, "Group"))" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Quantity">Quantity</label>
+                                <input type="text" asp-for="Quantity" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="UnitPrice">Unit Price</label>
+                                <input type="text" asp-for="UnitPrice" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="Frequency">Frequency</label>
+                                <select asp-for="Frequency" asp-items="@(new SelectList(ViewBag.Frequencies, "Value", "Text", null))" class="form-control"></select>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label asp-for="FrequencyMultiplier">Multiplier</label>
+                                <input type="text" asp-for="FrequencyMultiplier" class="form-control"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label asp-for="Anniversary">Anniversary</label>
+                                <input type="date" asp-for="Anniversary" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="reset" class="btn btn-warning">Reset</button>
+                    <a asp-area="Administration" asp-controller="Recurring" asp-action="Edit" asp-route-clientId="@Model.ClientId" class="btn btn-default">Create New</a>
+
+
+                </form>
+
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <table class="table table-bordered">
+                <thead>
+                <tr class="bg-primary">
+                    <td>Description</td>
+                    <td>Domain</td>
+                    <td>Quantity</td>
+                    <td>Unit Price</td>
+                    <td>Frequency</td>
+                    <td>Anniversary</td>
+                    <td>Edit</td>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (RecurringDetail recurring in ViewBag.Recurrings)
+                {
+                    <tr>
+                        <td>@recurring.ResourceName</td>
+                        <td>@recurring.DomainName</td>
+                        <td>@recurring.Quantity</td>
+                        <td>@recurring.UnitPrice</td>
+                        <td>@recurring.FrequencyMultiplier x @recurring.Frequency</td>
+                        <td>@recurring.Anniversary.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-clientId="@recurring.ClientId" asp-route-recurringId="@recurring.Id">Edit</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

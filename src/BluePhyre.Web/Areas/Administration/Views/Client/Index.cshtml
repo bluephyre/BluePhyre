@@ -1,0 +1,63 @@
+﻿@addTagHelper *, BluePhyre.Web
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using BluePhyre.Web.Areas.Administration.Models
+@model GetClientsViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Clients";
+}
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form asp-action="Index" method="get" class="form-inline">
+                    <div class="checkbox">
+                        <label asp-for="IncludeInactive"><input type="checkbox" asp-for="IncludeInactive" /> Include Inactive</label>
+                    </div>
+                    <button type="submit" class="btn btn-default">Refresh</button>
+                </form>
+            </div>
+            <div class="section">
+                <table id="accounts" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Account Name</th>
+                            <th>Username</th>
+                            <th>Active</th>
+                            <th>Domains</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var account in Model.Clients)
+            {
+                            <tr conditional-css-class-bg-warning="@account.Flag">
+                                <td>@account.Client.Id</td>
+                                <td>@account.Client.AccountName</td>
+                                <td>@account.Client.Username</td>
+                                <td>@(account.Client.Expired.HasValue ? "No" : "Yes")</td>
+                                <td>@account.ActiveDomains/@account.TotalDomains</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#accounts').DataTable({
+                "order": [[0, "asc"]]
+            });
+        });
+    </script>
+
+}

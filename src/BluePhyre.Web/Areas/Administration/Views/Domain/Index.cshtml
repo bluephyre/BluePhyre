@@ -1,0 +1,85 @@
+﻿@addTagHelper *, BluePhyre.Web
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using BluePhyre.Web.Areas.Administration.Models
+@model GetDomainsViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Domains";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form asp-action="Create" method="post" class="form-inline">
+                    <div class="form-group">
+                        <label for="clientId">Client</label>
+                        <select id="clientId" name="clientId" asp-items="@(new SelectList(ViewBag.ListOfClients, "Id", "Name"))" class="form-control"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="name">Domain Name</label>
+                        <input type="text" id="name" name="name" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </form>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <form asp-action="Index" method="get" class="form-inline">
+                    <div class="checkbox">
+                        <label asp-for="IncludeInactive"><input type="checkbox" asp-for="IncludeInactive" /> Include Inactive</label>
+                    </div>
+                    <button type="submit" class="btn btn-default">Refresh</button>
+                </form>
+
+            </div>
+            <div class="section">
+                <table id="accounts" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Client Id</th>
+                            <th>Name</th>
+                            <th>Active</th>
+                            <th>Recurring Charges</th>
+                            <th>Anniversary</th>
+                            <th>Registered</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var domain in Model.Domains)
+                        {
+                            <tr conditional-css-class-bg-warning="@(domain.Active && domain.RecurringCharges == 0)">
+                                <td>@domain.Id</td>
+                                <td>@domain.ClientId</td>
+                                <td><a href="http://@domain.Name">@domain.Name</a></td>
+                                <td><a asp-action="ToggleStatus" asp-route-domainId="@domain.Id">@(domain.Active ? "Yes" : "No")</a></td>
+                                <td><a asp-controller="Recurring" asp-action="Edit" asp-area="Administration" asp-route-clientId="@domain.ClientId"> @domain.RecurringCharges</a></td>
+                                <td>@domain.NextAnniversary?.ToString("yyyy-MM-dd")</td>
+                                <td>@(domain.Registered ? "Yes" : "No")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#accounts').DataTable({
+                "order": [[2, "asc"]]
+            });
+        });
+    </script>
+
+}

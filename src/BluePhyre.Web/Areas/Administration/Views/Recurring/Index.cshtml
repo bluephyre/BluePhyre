@@ -1,0 +1,98 @@
+﻿@addTagHelper *, BluePhyre.Web
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model BluePhyre.Web.Areas.Administration.Models.GetRecurringsViewModel
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Recurring";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Generate" method="post">
+
+            @foreach (var client in Model.Clients)
+            {
+                <table class="table table-bordered">
+                    <thead>
+                    <tr class="bg-primary">
+                        <th colspan="8">@client.Name</th>
+                        <th class="text-right"><a asp-action="Edit" asp-route-clientId="@client.Id" class="btn btn-default btn-xs">Manage</a></th>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th>Description</th>
+                        <th>Domain</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Frequency</th>
+                        <th>Anniversary</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var recurring in Model.Recurrings.Where(r => r.ClientId == client.Id))
+                    {
+                        <tr class="recurring" conditional-css-class-bg-warning="@(recurring.DaysLeft < 0)">
+                            <td><input name="recurringId" type="checkbox" value="@recurring.Id" /></td>
+                            <td>@recurring.ResourceName</td>
+                            <td>@recurring.DomainName</td>
+                            <td>@recurring.Quantity</td>
+                            <td>@recurring.UnitPrice</td>
+                            <td>@recurring.FrequencyMultiplier x @recurring.Frequency</td>
+                            <td class="anniversary">@recurring.Anniversary.ToString("yyyy-MM-dd")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            }
+            
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="createInvoices" value="true" />Create Invoices</label>
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceDate">Date</label>
+                        <input type="date" id="invoiceDate" name="invoiceDate" class="form-control" value="@Model.Recurrings.Min(r => r.Anniversary).ToString("yyyy-MM-dd")"/>
+                    </div>
+                    <button type="submit" name="generate" class="btn btn-primary">Generate</button>
+                    <button type="reset" class="btn btn-warning">Reset</button>
+                    <button type="button" id="selectAll" disabled="disabled" class="btn btn-default">Select Applicable</button>
+                </div>
+            </div>
+            
+
+        </form>
+
+
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#invoiceDate").on("change",
+                function() {
+                    if ($(this).val() !== "") {
+                        $("#selectAll").attr("disabled", null);
+                    } else {
+                        $("#selectAll").attr("disabled", "disabled");
+                        $("td.bg-success").removeClass("bg-success");
+                        $("td input[type=checkbox]").prop("checked", false);
+                    }
+                });
+            $("#selectAll").on("click",
+                function(e) {
+                    e.preventDefault();
+                    $("td input[type=checkbox]").prop("checked", false);
+                    var $row = $("tr.recurring").filter(function() {
+                        return $(this).find("td.anniversary").text() <= $("#invoiceDate").val();
+                    });
+                    $row.find("td input[type=checkbox]").prop("checked", true);
+                    $row.find("td").addClass("bg-success");
+                });
+        });
+    </script>
+
+}

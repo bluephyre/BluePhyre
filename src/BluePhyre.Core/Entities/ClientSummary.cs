@@ -3,6 +3,5 @@
     public class ClientSummary
     {
         public Client Client { get; set; }
-        
     }
 }
