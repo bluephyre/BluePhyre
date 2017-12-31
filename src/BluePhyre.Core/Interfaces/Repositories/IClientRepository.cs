@@ -9,6 +9,8 @@ namespace BluePhyre.Core.Interfaces.Repositories
         IEnumerable<ClientDetail> GetClientDetails(Status status = Status.All);
         IEnumerable<DomainDetail> GetDomainDetails(Status status = Status.All);
         bool ToggleDomainStatus(long domainId);
+        bool ToggleClientStatus(long clientId);
+        bool ToggleResourceStatus(long resourceId);
         bool CreateDomain(long clientId, string name);
         IEnumerable<ClientListItem> GetClientListItems(Status status = Status.Active);
         IEnumerable<DomainListItem> GetDomainListItems(long clientId, Status status = Status.Active);
@@ -25,5 +27,8 @@ namespace BluePhyre.Core.Interfaces.Repositories
 
         bool SaveRecurring(long? id, long clientId, long domainId, long resourceId, int quantity, decimal unitPrice,
             string frequency, int frequencyMultiplier, DateTime anniversary);
+
+        bool DeleteRecurring(long id, long clientId);
+        IEnumerable<ResourceDetail> GetResourceDetails(Status status = Status.Active);
     }
 }

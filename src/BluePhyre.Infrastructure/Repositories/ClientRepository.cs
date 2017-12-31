@@ -81,6 +81,35 @@ namespace BluePhyre.Infrastructure.Repositories
             return result == 1;
         }
 
+        public bool ToggleResourceStatus(long resourceId)
+        {
+            int result;
+
+            using (var connection = GetConnection())
+            {
+                result = connection.Execute("UPDATE resource SET active = MOD(active + 1, 2) WHERE id = @ResourceId", new { ResourceId = resourceId });
+            }
+
+            return result == 1;
+        }
+
+        public bool ToggleClientStatus(long clientId)
+        {
+            int result;
+
+            using (var connection = GetConnection())
+            {
+                result = connection.Execute(
+                    "UPDATE client SET expires = IF(expires is null, NOW(), NULL) WHERE id = @ClientId",
+                    new
+                    {
+                        ClientId = clientId
+                    });
+            }
+
+            return result == 1;
+        }
+
         public bool CreateDomain(long clientId, string name)
         {
             int result;
@@ -360,6 +389,51 @@ namespace BluePhyre.Infrastructure.Repositories
             }
 
             return result == 1;
+        }
+
+        public bool DeleteRecurring(long id, long clientId)
+        {
+            int result;
+
+            using (var connection = GetConnection())
+            {
+                result =connection.Execute("DELETE FROM recurring WHERE id = @Id AND clnt_id = @ClientId",
+                    new
+                    {
+                        Id = id,
+                        ClientId = clientId
+                    });
+            }
+
+            return result == 1;
+        }
+
+        public IEnumerable<ResourceDetail> GetResourceDetails(Status status = Status.Active)
+        {
+            IEnumerable<ResourceDetail> resources;
+
+            using (var connection = GetConnection())
+            {
+                resources = connection.Query<ResourceDetail>("SELECT id, name, disp_name as displayName, description, unit, unit_price as unitPrice, rtype, rclass, active " +
+                                                             "FROM resource");
+            }
+
+            switch (status)
+            {
+                case Status.Active:
+                    return resources.Where(r => r.Active);
+                case Status.Inactive:
+                    return resources.Where(r => !r.Active);
+            }
+
+            return resources;
+        }
+
+        private MySqlConnection GetConnection()
+        {
+            var connection = new MySqlConnection(Configuration.GetConnectionString("DefaultConnection"));
+            connection.Open();
+            return connection;
         }
     }
 }

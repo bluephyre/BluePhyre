@@ -62,9 +62,7 @@ namespace BluePhyre.Web.Areas.Administration.Controllers
             ViewBag.Domains = ClientRepository.GetDomainListItems(clientId).AddEmpty();
             ViewBag.Frequencies = new List<SelectListItem>
             {
-                new SelectListItem {Text = "Yearly", Value = "Y", Selected = true},
-                new SelectListItem {Text = "Quarterly", Value = "Q"},
-                new SelectListItem {Text = "Monthly", Value = "M"}
+                new SelectListItem {Text = "Yearly", Value = "Y", Selected = true}
             };
             ViewBag.Resources = ClientRepository.GetResourceListItems().AddEmpty();
 
@@ -111,6 +109,14 @@ namespace BluePhyre.Web.Areas.Administration.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult Delete(long id, long clientId)
+        {
+            ClientRepository.DeleteRecurring(id, clientId);
+
+            return RedirectToAction("Edit", new {ClientId = clientId});
         }
     }
 }

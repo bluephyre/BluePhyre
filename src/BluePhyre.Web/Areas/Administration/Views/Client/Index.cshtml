@@ -37,7 +37,7 @@
                                 <td>@account.Client.Id</td>
                                 <td>@account.Client.AccountName</td>
                                 <td>@account.Client.Username</td>
-                                <td>@(account.Client.Expired.HasValue ? "No" : "Yes")</td>
+                                <td><a asp-action="ToggleStatus" asp-route-clientId="@account.Client.Id">@(account.Client.Expired.HasValue ? "No" : "Yes")</a></td>
                                 <td>@account.ActiveDomains/@account.TotalDomains</td>
                             </tr>
                         }

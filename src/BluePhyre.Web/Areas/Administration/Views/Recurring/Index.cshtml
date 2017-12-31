@@ -17,8 +17,7 @@
                 <table class="table table-bordered">
                     <thead>
                     <tr class="bg-primary">
-                        <th colspan="8">@client.Name</th>
-                        <th class="text-right"><a asp-action="Edit" asp-route-clientId="@client.Id" class="btn btn-default btn-xs">Manage</a></th>
+                        <th colspan="7"><a asp-action="Edit" asp-route-clientId="@client.Id" style="color: white;">@client.Name</a></th>
                     </tr>
                     <tr>
                         <th></th>
@@ -36,7 +35,7 @@
                         <tr class="recurring" conditional-css-class-bg-warning="@(recurring.DaysLeft < 0)">
                             <td><input name="recurringId" type="checkbox" value="@recurring.Id" /></td>
                             <td>@recurring.ResourceName</td>
-                            <td>@recurring.DomainName</td>
+                            <td><a href="http://@recurring.DomainName" target="_blank">@recurring.DomainName</a></td>
                             <td>@recurring.Quantity</td>
                             <td>@recurring.UnitPrice</td>
                             <td>@recurring.FrequencyMultiplier x @recurring.Frequency</td>

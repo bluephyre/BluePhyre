@@ -55,11 +55,14 @@
                             <tr conditional-css-class-bg-warning="@(domain.Active && domain.RecurringCharges == 0)">
                                 <td>@domain.Id</td>
                                 <td>@domain.ClientId</td>
-                                <td><a href="http://@domain.Name">@domain.Name</a></td>
+                                <td><a href="http://@domain.Name" target="_blank">@domain.Name</a></td>
                                 <td><a asp-action="ToggleStatus" asp-route-domainId="@domain.Id">@(domain.Active ? "Yes" : "No")</a></td>
                                 <td><a asp-controller="Recurring" asp-action="Edit" asp-area="Administration" asp-route-clientId="@domain.ClientId"> @domain.RecurringCharges</a></td>
                                 <td>@domain.NextAnniversary?.ToString("yyyy-MM-dd")</td>
-                                <td>@(domain.Registered ? "Yes" : "No")</td>
+                                <td class="text-center">
+                                    @if (domain.Registered)
+                                    {<span class="glyphicon glyphicon-ok text-success"></span>}
+                                </td>
                             </tr>
                         }
                     </tbody>

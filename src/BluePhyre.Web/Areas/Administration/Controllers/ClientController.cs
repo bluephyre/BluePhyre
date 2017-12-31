@@ -28,5 +28,12 @@ namespace BluePhyre.Web.Areas.Administration.Controllers
             return View(model);
         }
 
+        public IActionResult ToggleStatus(long clientId)
+        {
+            ClientRepository.ToggleClientStatus(clientId);
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
