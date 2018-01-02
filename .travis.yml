@@ -4,4 +4,4 @@ dotnet: 2.0.0
 script:
   - dotnet restore
   - dotnet build ./BluePhyre.sln
-  - dotnet test ./BluePhyre.sln
+  - dotnet test ./tests/**/*.csproj
