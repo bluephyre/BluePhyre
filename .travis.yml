@@ -3,5 +3,6 @@ mono: none
 dotnet: 2.0.0
 script:
   - dotnet restore
-  - dotnet build ./BluePhyre.sln
-  - dotnet test ./tests/**/*.csproj
+  - dotnet build
+  - dotnet test tests/BluePhyre.Infrastructure.Tests/BluePhyre.Infrastructure.Tests.csproj
+  - dotnet test tests/BluePhyre.Web.Tests/BluePhyre.Web.Tests.csproj
