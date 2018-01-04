@@ -429,6 +429,11 @@ namespace BluePhyre.Infrastructure.Repositories
             return resources;
         }
 
+        public bool IsUserSuperAdmin(string identifier)
+        {
+            return true;
+        }
+
         private MySqlConnection GetConnection()
         {
             var connection = new MySqlConnection(Configuration.GetConnectionString("DefaultConnection"));

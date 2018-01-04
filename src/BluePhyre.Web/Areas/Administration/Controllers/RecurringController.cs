@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BluePhyre.Web.Areas.Administration.Controllers
 {
-    [Area("administration"), Authorize]
+    [Area("administration"), Authorize(Roles = "superadmin")]
     public class RecurringController : Controller
     {
         private IClientRepository ClientRepository { get; }

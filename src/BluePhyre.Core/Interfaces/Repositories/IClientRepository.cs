@@ -30,5 +30,6 @@ namespace BluePhyre.Core.Interfaces.Repositories
 
         bool DeleteRecurring(long id, long clientId);
         IEnumerable<ResourceDetail> GetResourceDetails(Status status = Status.Active);
+        bool IsUserSuperAdmin(string identifier);
     }
 }

@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BluePhyre.Core.Interfaces.Repositories;
+using BluePhyre.Infrastructure.Apis.DnSimple;
+using BluePhyre.Infrastructure.Apis.Linode;
 using BluePhyre.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -87,6 +90,20 @@ namespace BluePhyre.Web
                     OnTokenValidated = context =>
                     {
                         var user = context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+
+                        var repository = context.HttpContext.RequestServices.GetRequiredService<IClientRepository>();
+
+                        if (repository.IsUserSuperAdmin(user?.Value))
+                        {
+                            var claims = new List<Claim>
+                            {
+                                new Claim(ClaimTypes.Role, "superadmin")
+                            };
+
+                            context.Principal.AddIdentity(new ClaimsIdentity(claims));
+
+                        }
+
                         return Task.CompletedTask;
                     }
                 };
@@ -94,6 +111,8 @@ namespace BluePhyre.Web
 
             services.AddMvc();
             services.AddSingleton<IClientRepository, ClientRepository>();
+            services.AddTransient<DnSimpleApi>(sp => new DnSimpleApi(Configuration["DnSimple:Username"], Configuration["DnSimple:Password"]));
+            services.AddTransient<LinodeApi>(sp => new LinodeApi(Configuration["Linode:DomainToken"]));
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -101,7 +120,8 @@ namespace BluePhyre.Web
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            } else
+            }
+            else
             {
                 app.UseExceptionHandler("Home/Error");
             }
