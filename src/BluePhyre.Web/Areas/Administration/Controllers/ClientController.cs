@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BluePhyre.Web.Areas.Administration.Controllers
 {
-    [Area("administration"), Authorize("superadmin")]
+    [Area("administration"), Authorize(Roles = "superadmin")]
     public class ClientController : Controller
     {
         private IClientRepository ClientRepository { get; }

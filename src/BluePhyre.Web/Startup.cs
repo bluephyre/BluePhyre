@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using BluePhyre.Core.Interfaces.Repositories;
 using BluePhyre.Infrastructure.Apis.DnSimple;
 using BluePhyre.Infrastructure.Apis.Linode;
 using BluePhyre.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +19,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Linq;
 
 namespace BluePhyre.Web
 {
@@ -37,77 +42,90 @@ namespace BluePhyre.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            }).AddCookie()
-            .AddOpenIdConnect("Auth0", options =>
-            {
-                options.Authority = $"https://{Configuration["Auth0:Domain"]}";
-
-                options.ClientId = Configuration["Auth0:ClientId"];
-                options.ClientSecret = Configuration["Auth0:ClientSecret"];
-
-                options.ResponseType = "code";
-
-                options.Scope.Clear();
-                options.Scope.Add("openid");
-                options.Scope.Add("profile");
-                options.Scope.Add("email");
-
-                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    NameClaimType = "name"
-                };
-
-                options.CallbackPath = new PathString("/signin-auth0");
-
-                options.ClaimsIssuer = "Auth0";
-
-                options.Events = new OpenIdConnectEvents
+                    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                }).AddCookie()
+                .AddGoogle("google", options =>
                 {
-                    OnRedirectToIdentityProviderForSignOut = context =>
+                    options.ClientId = Configuration["Google:ClientId"];
+                    options.ClientSecret = Configuration["Google:ClientSecret"];
+
+                    options.Scope.Clear();
+                    options.Scope.Add("openid");
+                    options.Scope.Add("profile");
+                    options.Scope.Add("email");
+
+                    options.CallbackPath = new PathString("/signin-google");
+
+                    options.ClaimsIssuer = "Google";
+                    options.SaveTokens = true;
+
+                    options.Events = new OAuthEvents
                     {
-                        var logoutUri = $"https://{Configuration["Auth0:Domain"]}/v2/logout?client_id={Configuration["Auth0:ClientId"]}";
-
-                        var postLogoutUri = context.Properties.RedirectUri;
-                        if (!string.IsNullOrEmpty(postLogoutUri))
+                        OnCreatingTicket = context =>
                         {
-                            if (postLogoutUri.StartsWith("/"))
+                            var user = context.Principal.Claims.FirstOrDefault(c =>
+                                c.Type == ClaimTypes.NameIdentifier);
+
+                            var repository =
+                                context.HttpContext.RequestServices.GetRequiredService<IClientRepository>();
+
+                            if (repository.IsUserSuperAdmin(user?.Value))
                             {
-                                var request = context.Request;
-                                postLogoutUri = request.Scheme + "://" + request.Host + request.PathBase + postLogoutUri;
+                                var claims = new List<Claim>
+                                {
+                                    new Claim(ClaimTypes.Role, "superadmin")
+                                };
+
+                                context.Principal.AddIdentity(new ClaimsIdentity(claims));
+
                             }
-                            logoutUri += $"&returnTo={ Uri.EscapeDataString(postLogoutUri)}";
+
+                            return Task.CompletedTask;
                         }
+                    };
+                })
+                .AddFacebook("facebook", options =>
+                {
+                    options.ClientId = Configuration["Facebook:ClientId"];
+                    options.ClientSecret = Configuration["Facebook:ClientSecret"];
 
-                        context.Response.Redirect(logoutUri);
-                        context.HandleResponse();
+                    options.Scope.Clear();
+                    options.Scope.Add("public_profile");
+                    options.Scope.Add("email");
 
-                        return Task.CompletedTask;
-                    },
-                    OnTokenValidated = context =>
+                    options.CallbackPath = new PathString("/signin-facebook");
+
+                    options.ClaimsIssuer = "Facebook";
+                    options.SaveTokens = true;
+
+                    options.Events = new OAuthEvents
                     {
-                        var user = context.Principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-
-                        var repository = context.HttpContext.RequestServices.GetRequiredService<IClientRepository>();
-
-                        if (repository.IsUserSuperAdmin(user?.Value))
+                        OnCreatingTicket = context =>
                         {
-                            var claims = new List<Claim>
+                            var user = context.Principal.Claims.FirstOrDefault(c =>
+                                c.Type == ClaimTypes.NameIdentifier);
+
+                            var repository =
+                                context.HttpContext.RequestServices.GetRequiredService<IClientRepository>();
+
+                            if (repository.IsUserSuperAdmin(user?.Value))
                             {
-                                new Claim(ClaimTypes.Role, "superadmin")
-                            };
+                                var claims = new List<Claim>
+                                {
+                                    new Claim(ClaimTypes.Role, "superadmin")
+                                };
 
-                            context.Principal.AddIdentity(new ClaimsIdentity(claims));
+                                context.Principal.AddIdentity(new ClaimsIdentity(claims));
 
+                            }
+
+                            return Task.CompletedTask;
                         }
-
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                    };
+                });
 
             services.AddMvc();
             services.AddSingleton<IClientRepository, ClientRepository>();

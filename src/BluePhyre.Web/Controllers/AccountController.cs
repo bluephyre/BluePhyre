@@ -11,15 +11,21 @@ namespace BluePhyre.Web.Controllers
 {
     public class AccountController : Controller
     {
-        public async Task Login(string returnUrl = "/")
+
+        public IActionResult Select()
         {
-            await HttpContext.ChallengeAsync("Auth0", new AuthenticationProperties { RedirectUri = returnUrl });
+            return View();
+        }
+
+        public async Task Login(string id = "google", string returnUrl = "/")
+        {
+            await HttpContext.ChallengeAsync(id.ToLower(), new AuthenticationProperties { RedirectUri = returnUrl });
         }
 
         [Authorize]
         public async Task Logout()
         {
-            await HttpContext.SignOutAsync("Auth0", new AuthenticationProperties
+            await HttpContext.SignOutAsync(new AuthenticationProperties
             {
                 RedirectUri = Url.Action("Index", "Home")
             });
